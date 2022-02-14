@@ -14,7 +14,7 @@ export class ResponseUtils {
   static success(msg?: string, data?: any): ResponseDto {
     return {
       success: true,
-      code: ResultCode.FGP_0000.toString(),
+      code: ResultCode.FGP_0000,
       msg: msg,
       data: data,
     };

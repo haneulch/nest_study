@@ -42,7 +42,7 @@ export class ApiExampleController {
   }
 
   @Public()
-  @Get('/refreshToken')
+  @Get('refreshToken')
   refreshToken(@Req() request) {
     return this.apiExampleService.refresh(request.body.userId);
   }

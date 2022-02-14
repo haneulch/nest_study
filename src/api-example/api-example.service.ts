@@ -1,6 +1,7 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { ApiExampleExternalService } from './api-example-external.service';
+import { ResponseUtils } from '../util/response.utils';
 
 @Injectable()
 export class ApiExampleService {
@@ -12,7 +13,7 @@ export class ApiExampleService {
   async login(userId: string) {
     const data = await this.apiExampleExternalService.login(userId);
     await this.cacheManager.set(userId, data, { ttl: 60 * 100 });
-    return data;
+    return ResponseUtils.success('success');
   }
 
   async getData(requestData) {
@@ -26,11 +27,16 @@ export class ApiExampleService {
       await this.refresh(requestData.userId);
       data = await this.apiExampleExternalService.search(requestData, token['accessToken']);
     }
-    return data;
+    return ResponseUtils.success('', data);
   }
 
   async refresh(userId: string) {
     const token = await this.cacheManager.get(userId);
-    return this.apiExampleExternalService.refreshToken(userId, token['refreshToken']);
+    const data = await this.apiExampleExternalService.refreshToken(userId, token['refreshToken']);
+    if (data.message === 'invalid token') {
+      throw new UnauthorizedException(data.message);
+    }
+    await this.cacheManager.set(userId, data, { ttl: 60 * 100 });
+    return ResponseUtils.success('success');
   }
 }
