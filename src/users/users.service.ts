@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user';
 import { UserDto } from './user-dto';
-import { CryptoService } from '../util/crypto.service';
+import { BcryptService } from '../util/bcrypt.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly cryptoService: CryptoService) {}
+  constructor(private bcryptService: BcryptService) {}
 
   private readonly users: User[] = [];
 
@@ -22,7 +22,7 @@ export class UsersService {
     if (this.users.find((user) => user.username === userDto.username)) {
       return false;
     }
-    const password = await this.cryptoService.encryptText(userDto.password);
+    const password = await this.bcryptService.encryptText(userDto.password);
     const user: User = {
       userId: this.getMaxId(),
       username: userDto.username,

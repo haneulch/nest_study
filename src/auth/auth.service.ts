@@ -3,7 +3,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/user';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from '../users/user-dto';
-import { CryptoService } from '../util/crypto.service';
+import { BcryptService } from '../util/bcrypt.service';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
 
@@ -12,7 +12,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private cryptoService: CryptoService,
+    private bcryptService: BcryptService,
     private configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
@@ -43,7 +43,7 @@ export class AuthService {
 
   async validateUser(userDto: UserDto): Promise<any> {
     const user: User = await this.usersService.findOne(userDto.username);
-    const isMatch = await this.cryptoService.isMatch(userDto.password, user.password);
+    const isMatch = await this.bcryptService.isMatch(userDto.password, user.password);
     if (user && isMatch) {
       const { password, ...result } = user;
       return result;

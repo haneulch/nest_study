@@ -9,6 +9,12 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { UtilModule } from './util/util.module';
 import { ApiExampleModule } from './api-example/api-example.module';
+import { TaskModule } from './task/task.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MysqlConfigModule } from './mysql-config/mysql-config.module';
+import { MysqlConfigService } from './mysql-config/mysql-config.service';
+import { ContentModule } from './content/content.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -24,6 +30,14 @@ import { ApiExampleModule } from './api-example/api-example.module';
     UsersModule,
     UtilModule,
     ApiExampleModule,
+    TaskModule,
+    TypeOrmModule.forRootAsync({
+      imports: [MysqlConfigModule],
+      useClass: MysqlConfigService,
+      inject: [MysqlConfigModule],
+    }),
+    ContentModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [
