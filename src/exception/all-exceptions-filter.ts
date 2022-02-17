@@ -16,7 +16,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const responseBody = {
       success: false,
-      code: ResultCode.FGP_0001,
+      code: ResultCode.DKY_9999,
       message: response?.message ? response?.message : exception?.message,
       data: response?.error,
     };

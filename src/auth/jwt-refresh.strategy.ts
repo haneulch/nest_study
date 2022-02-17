@@ -7,15 +7,15 @@ import { ConfigService } from '@nestjs/config';
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(private readonly configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromHeader('TOKEN'),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get('JWT_REFRESH_TOKEN_SECRET'),
     });
   }
 
   async validate(payload: any) {
-    if (payload?.username && payload.refresh) {
-      return { username: payload.username };
+    if (payload && payload.userId) {
+      return { userId: payload.userId };
     }
     throw new UnauthorizedException();
   }

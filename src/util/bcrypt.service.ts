@@ -8,7 +8,7 @@ export class BcryptService {
     return await bcrypt.hash(text, saltOrRounds);
   }
 
-  async isMatch(text: string, hash: string) {
-    return await bcrypt.compare(text, hash);
+  isMatch(text: string, target: string) {
+    return bcrypt.compare(text, target);
   }
 }

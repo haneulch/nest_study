@@ -1,11 +1,11 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { User } from '../users/user';
 import { JwtService } from '@nestjs/jwt';
-import { UserDto } from '../users/user-dto';
 import { BcryptService } from '../util/bcrypt.service';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
+import { User } from '../users/entities/user.entity';
+import { LoginDto } from '../users/dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,14 +17,14 @@ export class AuthService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  private async generateToken(username: string) {
-    const payload = { username };
+  private async generateToken(userId: string) {
+    const payload = { userId };
     const accessToken = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
       expiresIn: `${this.configService.get('JWT_ACCESS_TOKEN_EXPIRE')}s`,
     });
 
-    const refreshPayload = { username, refresh: true };
+    const refreshPayload = { userId, refresh: true };
     const refreshToken = this.jwtService.sign(refreshPayload, {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn: `${this.configService.get('JWT_REFRESH_TOKEN_EXPIRE')}s`,
@@ -41,25 +41,19 @@ export class AuthService {
     return { accessToken, refreshToken, cookieOption };
   }
 
-  async validateUser(userDto: UserDto): Promise<any> {
-    const user: User = await this.usersService.findOne(userDto.username);
-    const isMatch = await this.bcryptService.isMatch(userDto.password, user.password);
-    if (user && isMatch) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
+  async validateUser(loginDto: LoginDto): Promise<boolean> {
+    const user: User = await this.usersService.findOne(loginDto.userId);
+    if (!user) return false;
+    return await this.bcryptService.isMatch(loginDto.password, user?.password);
   }
 
-  async login(userDto: UserDto) {
-    const user = await this.validateUser(userDto);
-    if (user) {
-      return await this.generateToken(userDto.username);
-    }
-    console.log('Login Failed');
+  async login(loginDto: LoginDto) {
+    const result = await this.validateUser(loginDto);
+    if (!result) return null;
+    return await this.generateToken(loginDto.userId);
   }
 
-  async refresh(username) {
-    return await this.generateToken(username);
+  async refresh(userId) {
+    return await this.generateToken(userId);
   }
 }

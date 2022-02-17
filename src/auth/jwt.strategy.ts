@@ -18,9 +18,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-access') {
   }
 
   async validate(payload: any) {
-    console.log('valid');
-    if (payload && payload.username) {
-      return this.usersService.findOne(payload.username);
+    if (payload && payload.userId) {
+      return this.usersService.findOne(payload.userId);
     }
     throw new UnauthorizedException();
   }

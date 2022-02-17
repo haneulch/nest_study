@@ -1,11 +1,15 @@
-import { CACHE_MANAGER, Controller, Get, Inject, Param, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, CACHE_MANAGER, Controller, Get, Inject, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { Public } from './auth/jwt-auth.guard';
 import { UsersService } from './users/users.service';
 import { Cache } from 'cache-manager';
 import { JwtRefreshAuthGuard } from './auth/jwt-refresh-auth.guard';
+import { LoginDto } from './users/dto/login.dto';
+import { LoginResDto } from './users/dto/login.res.dto';
 import { ResponseUtils } from './util/response.utils';
+import { ResultCode } from './constant/result-code';
+import MessageConstant from './constant/message-constant';
 
 @Controller()
 export class AppController {
@@ -17,45 +21,22 @@ export class AppController {
   ) {}
 
   @Public()
-  @Get()
-  home(): string {
-    return 'test app.controller';
-  }
-
-  @Public()
-  @Post('/auth/login')
-  async login(@Req() request, @Res({ passthrough: true }) response) {
-    const { accessToken, refreshToken, cookieOption } = await this.authService.login(request.body);
-    response.cookie('TOKEN', refreshToken, cookieOption);
-
-    console.log(refreshToken);
-    return { accessToken };
-  }
-
-  @Public()
-  @Get('/auth/logout/:username')
-  async logout(@Param() params) {
-    this.cacheManager.del(params.username);
-    return ResponseUtils.success();
+  @Post('login')
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response) {
+    const result: LoginResDto = await this.authService.login(loginDto);
+    if (result) {
+      response.cookie('TOKEN', result.refreshToken, result.cookieOption);
+      return ResponseUtils.success(result);
+    }
+    return ResponseUtils.error(ResultCode.DKY_0002, MessageConstant.WRONG_LOGIN_INFO);
   }
 
   @Public()
   @UseGuards(JwtRefreshAuthGuard)
-  @Get('/auth/refresh')
-  async refresh(@Req() request, @Res({ passthrough: true }) response) {
-    const { accessToken, refreshToken, cookieOption } = await this.authService.refresh(request.body.username);
+  @Get('refresh/:userId')
+  async refresh(@Param() params, @Res({ passthrough: true }) response) {
+    const { accessToken, refreshToken, cookieOption } = await this.authService.refresh(params.userId);
     response.cookie('TOKEN', refreshToken, cookieOption);
     return { accessToken };
-  }
-
-  @Get('/profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
-  @Public()
-  @Get('/cache/:username')
-  async getCache(@Param() params) {
-    return await this.cacheManager.get(params.username);
   }
 }
