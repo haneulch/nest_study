@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/
 import { ContentService } from './content.service';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
-import { Public } from '../auth/jwt-auth.guard';
 import { SearchContentDto } from './dto/search-content.dto';
 
 @Controller('content')

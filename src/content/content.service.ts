@@ -13,7 +13,7 @@ export class ContentService {
 
   async create(createContentDto: CreateContentDto) {
     await this.contentRepository.insert(createContentDto);
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 
   async findAllByUsername(username: string) {
@@ -25,22 +25,22 @@ export class ContentService {
       },
       order: { createdDt: 'DESC' },
     });
-    return ResponseUtils.success('', contents);
+    return ResponseUtils.success(contents);
   }
 
   async findOne(id: number) {
     const content = await this.contentRepository.findOne(id, { select: ['message', 'showYn'] });
-    return ResponseUtils.success('', content);
+    return ResponseUtils.success(content);
   }
 
   async update(id: number, updateContentDto: UpdateContentDto) {
     await this.contentRepository.update(id, updateContentDto);
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 
   async remove(id: number) {
     await this.contentRepository.update(id, { deleteYn: 'Y' });
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 
   async report(id: number) {
@@ -49,12 +49,12 @@ export class ContentService {
     if (content.reportCount >= 3) {
       await this.contentRepository.update(id, { deleteYn: 'Y' });
     }
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 
   async disconnect(id: number) {
-    await this.contentRepository.update(id, { username: '-' });
-    return ResponseUtils.success('success');
+    await this.contentRepository.update(id, { userId: '-' });
+    return ResponseUtils.success();
   }
 
   async findAll(searchContentDto: SearchContentDto) {
@@ -64,10 +64,10 @@ export class ContentService {
         message: Like(`%${searchContentDto.message}%`),
         deleteYn: 'N',
         showYn: 'Y',
-        ...(searchContentDto.username && { username: searchContentDto.username }),
+        ...(searchContentDto.userId && { userId: searchContentDto.userId }),
       },
       order: { createdDt: 'DESC' },
     });
-    return ResponseUtils.success('', contents);
+    return ResponseUtils.success(contents);
   }
 }

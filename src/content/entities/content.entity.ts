@@ -6,7 +6,7 @@ export class Content {
   id: number;
 
   @Column()
-  username: string;
+  userId: string;
 
   @Column({ length: 500 })
   message: string;

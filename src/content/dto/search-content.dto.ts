@@ -5,5 +5,5 @@ export class SearchContentDto {
   readonly message: string;
 
   @IsString()
-  readonly username: string;
+  readonly userId: string;
 }

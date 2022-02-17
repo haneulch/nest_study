@@ -2,7 +2,7 @@ import { IsString } from 'class-validator';
 
 export class CreateContentDto {
   @IsString()
-  readonly username: string;
+  readonly userId: string;
 
   @IsString()
   readonly message: string;
