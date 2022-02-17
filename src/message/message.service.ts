@@ -11,21 +11,21 @@ export class MessageService {
 
   async create(createMessageDto: CreateMessageDto) {
     await this.messageRepository.insert(createMessageDto);
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 
   async findAll(contentId: number) {
     const messages = await this.messageRepository.find({
-      select: ['id', 'username', 'message'],
+      select: ['id', 'userId', 'message'],
       where: { contentId: contentId, deleteYn: 'N' },
       order: { createdDt: 'DESC' },
     });
-    return ResponseUtils.success('', messages);
+    return ResponseUtils.success(messages);
   }
 
   async remove(id: number) {
     await this.messageRepository.update(id, { deleteYn: 'Y' });
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 
   async report(id: number) {
@@ -34,6 +34,6 @@ export class MessageService {
     if (message.reportCount >= 3) {
       await this.messageRepository.update(id, { deleteYn: 'Y' });
     }
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 }

@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { Public } from '../auth/jwt-auth.guard';
 
 @Controller('message')
 export class MessageController {

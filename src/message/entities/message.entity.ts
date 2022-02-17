@@ -6,7 +6,7 @@ export class Message {
   id: number;
 
   @Column()
-  username: string;
+  userId: string;
 
   @Column()
   message: string;
