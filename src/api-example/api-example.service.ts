@@ -13,7 +13,7 @@ export class ApiExampleService {
   async login(userId: string) {
     const data = await this.apiExampleExternalService.login(userId);
     await this.cacheManager.set(userId, data, { ttl: 60 * 100 });
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 
   async getData(requestData) {
@@ -27,7 +27,7 @@ export class ApiExampleService {
       await this.refresh(requestData.userId);
       data = await this.apiExampleExternalService.search(requestData, token['accessToken']);
     }
-    return ResponseUtils.success('', data);
+    return ResponseUtils.success(data);
   }
 
   async refresh(userId: string) {
@@ -37,6 +37,6 @@ export class ApiExampleService {
       throw new UnauthorizedException(data.message);
     }
     await this.cacheManager.set(userId, data, { ttl: 60 * 100 });
-    return ResponseUtils.success('success');
+    return ResponseUtils.success();
   }
 }
