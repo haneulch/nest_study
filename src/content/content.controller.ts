@@ -1,21 +1,21 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { ContentService } from './content.service';
-import { CreateContentDto } from './dto/create-content.dto';
-import { UpdateContentDto } from './dto/update-content.dto';
-import { SearchContentDto } from './dto/search-content.dto';
+import { UpdateContentReqDto } from './dto/update-content.req.dto';
+import { SearchContentReqDto } from './dto/search-content.req.dto';
+import { CreateContentReqDto } from './dto/create-content.req.dto';
 
 @Controller('content')
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
   @Post()
-  create(@Body() createContentDto: CreateContentDto) {
-    return this.contentService.create(createContentDto);
+  create(@Body() body: CreateContentReqDto) {
+    return this.contentService.create(body);
   }
 
   @Get()
-  findAll(@Body() searchContentDto: SearchContentDto) {
-    return this.contentService.findAll(searchContentDto);
+  findAll(@Body() body: SearchContentReqDto) {
+    return this.contentService.findAll(body);
   }
 
   @Get('user/:username')
@@ -29,8 +29,8 @@ export class ContentController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContentDto: UpdateContentDto) {
-    return this.contentService.update(+id, updateContentDto);
+  update(@Param('id') id: string, @Body() body: UpdateContentReqDto) {
+    return this.contentService.update(+id, body);
   }
 
   @Delete(':id')

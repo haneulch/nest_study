@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { CreateMessageReqDto } from './dto/create-message.req.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from './entities/message.entity';
 import { Repository } from 'typeorm';
@@ -9,8 +9,8 @@ import { ResponseUtils } from '../util/response.utils';
 export class MessageService {
   constructor(@InjectRepository(Message) private readonly messageRepository: Repository<Message>) {}
 
-  async create(createMessageDto: CreateMessageDto) {
-    await this.messageRepository.insert(createMessageDto);
+  async create(param: CreateMessageReqDto) {
+    await this.messageRepository.insert(param);
     return ResponseUtils.success();
   }
 

@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class UpdateContentDto {
+export class UpdateContentReqDto {
   @IsString()
   readonly showYn: string;
 }

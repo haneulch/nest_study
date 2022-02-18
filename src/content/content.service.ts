@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { CreateContentDto } from './dto/create-content.dto';
-import { UpdateContentDto } from './dto/update-content.dto';
 import { Content } from './entities/content.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { ResponseUtils } from '../util/response.utils';
-import { SearchContentDto } from './dto/search-content.dto';
+import { SearchContentReqDto } from './dto/search-content.req.dto';
+import { UpdateContentReqDto } from './dto/update-content.req.dto';
+import { CreateContentReqDto } from './dto/create-content.req.dto';
 
 @Injectable()
 export class ContentService {
   constructor(@InjectRepository(Content) private readonly contentRepository: Repository<Content>) {}
 
-  async create(createContentDto: CreateContentDto) {
-    await this.contentRepository.insert(createContentDto);
+  async create(param: CreateContentReqDto) {
+    await this.contentRepository.insert(param);
     return ResponseUtils.success();
   }
 
@@ -33,8 +33,8 @@ export class ContentService {
     return ResponseUtils.success(content);
   }
 
-  async update(id: number, updateContentDto: UpdateContentDto) {
-    await this.contentRepository.update(id, updateContentDto);
+  async update(id: number, param: UpdateContentReqDto) {
+    await this.contentRepository.update(id, param);
     return ResponseUtils.success();
   }
 
@@ -57,14 +57,14 @@ export class ContentService {
     return ResponseUtils.success();
   }
 
-  async findAll(searchContentDto: SearchContentDto) {
+  async findAll(param: SearchContentReqDto) {
     const contents = await this.contentRepository.find({
       select: ['id', 'message'],
       where: {
-        message: Like(`%${searchContentDto.message}%`),
+        message: Like(`%${param.message}%`),
         deleteYn: 'N',
         showYn: 'Y',
-        ...(searchContentDto.userId && { userId: searchContentDto.userId }),
+        ...(param.userId && { userId: param.userId }),
       },
       order: { createdDt: 'DESC' },
     });

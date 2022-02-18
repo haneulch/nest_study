@@ -5,11 +5,11 @@ import { Public } from './auth/jwt-auth.guard';
 import { UsersService } from './users/users.service';
 import { Cache } from 'cache-manager';
 import { JwtRefreshAuthGuard } from './auth/jwt-refresh-auth.guard';
-import { LoginDto } from './users/dto/login.dto';
 import { LoginResDto } from './users/dto/login.res.dto';
 import { ResponseUtils } from './util/response.utils';
 import { ResultCode } from './constant/result-code';
 import MessageConstant from './constant/message-constant';
+import { LoginReqDto } from './users/dto/login.req.dto';
 
 @Controller()
 export class AppController {
@@ -22,8 +22,8 @@ export class AppController {
 
   @Public()
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response) {
-    const result: LoginResDto = await this.authService.login(loginDto);
+  async login(@Body() body: LoginReqDto, @Res({ passthrough: true }) response) {
+    const result: LoginResDto = await this.authService.login(body);
     if (result) {
       response.cookie('TOKEN', result.refreshToken, result.cookieOption);
       return ResponseUtils.success(result);

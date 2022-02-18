@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class CreateContentDto {
+export class CreateContentReqDto {
   @IsString()
   readonly userId: string;
 

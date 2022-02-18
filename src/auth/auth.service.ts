@@ -5,7 +5,7 @@ import { BcryptService } from '../util/bcrypt.service';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
 import { User } from '../users/entities/user.entity';
-import { LoginDto } from '../users/dto/login.dto';
+import { LoginReqDto } from '../users/dto/login.req.dto';
 
 @Injectable()
 export class AuthService {
@@ -41,16 +41,16 @@ export class AuthService {
     return { accessToken, refreshToken, cookieOption };
   }
 
-  async validateUser(loginDto: LoginDto): Promise<boolean> {
-    const user: User = await this.usersService.findOne(loginDto.userId);
+  async validateUser(param: LoginReqDto): Promise<boolean> {
+    const user: User = await this.usersService.findOne(param.userId);
     if (!user) return false;
-    return await this.bcryptService.isMatch(loginDto.password, user?.password);
+    return await this.bcryptService.isMatch(param.password, user?.password);
   }
 
-  async login(loginDto: LoginDto) {
-    const result = await this.validateUser(loginDto);
+  async login(param: LoginReqDto) {
+    const result = await this.validateUser(param);
     if (!result) return null;
-    return await this.generateToken(loginDto.userId);
+    return await this.generateToken(param.userId);
   }
 
   async refresh(userId) {
